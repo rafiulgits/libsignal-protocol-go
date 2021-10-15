@@ -1,3 +1,5 @@
+filippo.io/edwards25519 v1.0.0-rc.1 h1:m0VOOB23frXZvAOK44usCgLWvtsxIoMCTBGJZlpmGfU=
+filippo.io/edwards25519 v1.0.0-rc.1/go.mod h1:N1IkdkCkiLB6tki+MYJoSx2JTY9NUlxZE7eHn5EwJns=
 github.com/RadicalApp/complete v0.0.0-20170329192659-17e6c0ee499b h1:cAULFohNVfNzco0flF4okSPg3s7/tCj+hMIldtYZo4c=
 github.com/RadicalApp/complete v0.0.0-20170329192659-17e6c0ee499b/go.mod h1:zZ3+l0EkpT2ZPnoamPBG50PBUtQrXwwyJ6elQZMmqgk=
 github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412 h1:w1UutsfOrms1J05zt7ISrnJIXKzwaspym5BTKGx93EI=
