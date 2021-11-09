@@ -12,10 +12,6 @@ import (
 	"github.com/RadicalApp/libsignal-protocol-go/util/bytehelper"
 )
 
-func copy32Bytes(dst *[32]byte, src []byte) {
-	copy(dst[:], src[:4])
-}
-
 // sign signs the message with privateKey and returns a signature as a byte slice.
 func sign(privateKey *[32]byte, message []byte, random [64]byte) *[64]byte {
 
@@ -23,8 +19,7 @@ func sign(privateKey *[32]byte, message []byte, random [64]byte) *[64]byte {
 	var A edwards25519.Point
 	privateKeyScalar, _ := edwards25519.NewScalar().SetBytesWithClamping(privateKey[:])
 	A.ScalarBaseMult(privateKeyScalar)
-	var publicKey [32]byte
-	copy32Bytes(&publicKey, A.Bytes())
+	publicKey := bytehelper.SliceToArray(A.Bytes())
 
 	// Calculate r
 	diversifier := [32]byte{
