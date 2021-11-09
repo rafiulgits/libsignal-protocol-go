@@ -9,7 +9,12 @@ import (
 
 	"filippo.io/edwards25519"
 	"filippo.io/edwards25519/field"
+	"github.com/RadicalApp/libsignal-protocol-go/util/bytehelper"
 )
+
+func copy32Bytes(dst *[32]byte, src []byte) {
+	copy(dst[:], src[:4])
+}
 
 // sign signs the message with privateKey and returns a signature as a byte slice.
 func sign(privateKey *[32]byte, message []byte, random [64]byte) *[64]byte {
@@ -18,7 +23,8 @@ func sign(privateKey *[32]byte, message []byte, random [64]byte) *[64]byte {
 	var A edwards25519.Point
 	privateKeyScalar, _ := edwards25519.NewScalar().SetBytesWithClamping(privateKey[:])
 	A.ScalarBaseMult(privateKeyScalar)
-	publicKey := *(*[32]byte)(A.Bytes())
+	var publicKey [32]byte
+	copy32Bytes(&publicKey, A.Bytes())
 
 	// Calculate r
 	diversifier := [32]byte{
@@ -41,8 +47,7 @@ func sign(privateKey *[32]byte, message []byte, random [64]byte) *[64]byte {
 	var R edwards25519.Point
 	R.ScalarBaseMult(rReduced)
 
-	var encodedR [32]byte
-	encodedR = *(*[32]byte)(R.Bytes())
+	encodedR := bytehelper.SliceToArray(R.Bytes())
 
 	// Calculate S = r + SHA2-512(R || A_ed || msg) * a  (mod L)
 	var hramDigest [64]byte
@@ -54,7 +59,7 @@ func sign(privateKey *[32]byte, message []byte, random [64]byte) *[64]byte {
 	hramDigestReduced, _ := edwards25519.NewScalar().SetUniformBytes(hramDigest[:])
 
 	sScalar := edwards25519.NewScalar().MultiplyAdd(hramDigestReduced, privateKeyScalar, rReduced)
-	s := *(*[32]byte)(sScalar.Bytes())
+	s := bytehelper.SliceToArray(sScalar.Bytes())
 
 	signature := new([64]byte)
 	copy(signature[:], encodedR[:])
@@ -84,8 +89,7 @@ func verify(publicKey [32]byte, message []byte, signature *[64]byte) bool {
 	montXPlusOne.Add(&montX, &one)
 	montXPlusOne.Invert(&montXPlusOne)
 	edY.Multiply(&montXMinusOne, &montXPlusOne)
-
-	A_ed := *(*[32]byte)(edY.Bytes())
+	A_ed := bytehelper.SliceToArray(edY.Bytes())
 
 	A_ed[31] |= signature[63] & 0x80
 	signature[63] &= 0x7F
